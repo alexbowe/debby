@@ -6,20 +6,12 @@ import operator as op
 from collections import defaultdict
 from utility import *
 
-# Taken from http://docs.python.org/2/library/itertools.html
-# Add a threshold here for "solid" kmers
-def unique(iterable, key=None):
-  "List unique elements, preserving order. Remember only the element just seen."
-  return it.imap(next, it.imap(op.itemgetter(1), it.groupby(iterable, key)))
-
 def flag_edge((suffix, edges)):
+  # this set will grow to a maximum of the size of the alphabet
   seen = set()
   for _,e in edges:
-    if e in seen:
-      yield 1
-    else:
-      seen.add(e)
-      yield 0
+    yield 1 if e in seen else 0
+    seen.add(e)
 
 def group(pairs, key=lambda (v,e): v):
   return it.groupby(pairs, key=key)
@@ -33,7 +25,6 @@ def flag_last((node, edges)):
 
 lines = (clean(line).split() for line in sys.stdin)
 lines = ((reverse(v),e) for v,e in lines)
-lines = unique(lines)
 
 w,x,y,z = it.tee(lines, 4)
 
@@ -50,4 +41,5 @@ for (c,v), last_flag, edge, out_flag in g:
   counts[c] += v
   print last_flag, edge, out_flag
 
-print [0] + list(accumulate(v for _,v in sorted(counts.items())))[:-1]
+F = [0] + list(accumulate(v for _,v in sorted(counts.items())))[:-1]
+print " ".join(str(n) for n in F)
