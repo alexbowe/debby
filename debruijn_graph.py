@@ -47,6 +47,10 @@ class debruijn_graph:
   def _node_range(self, v):
     return (self._first_edge(v), self._last_edge(v))
 
+  def _edge_to_node(self, i):
+    if i == 0: return 0
+    return rank(1, self._last, i - 1)
+
   def outdegree(self, v):
     first, last = self._node_range(v)
     return last - first + 1
@@ -69,12 +73,25 @@ class debruijn_graph:
   def indegree(self, v):
     i = self._last_edge(v)
     first_pred = self._bwd(i)
+    if first_pred == -1: return 0
     c = self._edges[first_pred]
     next_node = select(c, self._edges, first_pred + 1) or self.num_edges - 1
     return rank(c+"-", self._edges, next_node) - rank(c+"-", self._edges, first_pred) + 1
 
-  def incoming(v,c):
-    pass
+  def incoming(self, v, c):
+    i = self._last_edge(v)
+    first_pred = self._bwd(i)
+    if first_pred == -1: return -1
+    e = self._edges[first_pred]
+    next_node = select(e, self._edges, first_pred + 1) or self.num_edges - 1
+    flags_before_base = rank(e+"-", self._edges, first_pred)
+    number_flags = rank(e+"-", self._edges, next_node) - flags_before_base
+    indices = [first_pred] + [select(e+"-", self._edges, flags_before_base + x) for x in xrange(1, number_flags + 1)]
+    accessor = lambda i: self.label(self._edge_to_node(indices[i]))[0]
+    a = array_adaptor(accessor, len(indices))
+    sub_idx = get_index(a, c)
+    if sub_idx == -1: return -1
+    return self._edge_to_node(indices[sub_idx])
 
   def _label_iter(self, v):
     i = self._first_edge(v)
