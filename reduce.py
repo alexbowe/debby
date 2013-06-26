@@ -26,6 +26,11 @@ def flag_last((node, edges)):
 lines = (clean(line).split() for line in sys.stdin)
 lines = ((reverse(v),e) for v,e in lines)
 
+# get k value from first row
+first = lines.next()
+k = len(first[0])
+lines = it.chain([first], lines)
+
 w,x,y,z = it.tee(lines, 4)
 
 f_column = ((v[-1], 1) for v,_ in x)
@@ -43,3 +48,5 @@ for (c,v), last_flag, edge, out_flag in g:
 
 F = [0] + list(accumulate(v for _,v in sorted(counts.items())))[:-1]
 print " ".join(str(n) for n in F)
+
+print k
