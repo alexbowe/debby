@@ -10,6 +10,10 @@ def flatten(listOfLists):
   "Flatten one level of nesting"
   return it.chain.from_iterable(listOfLists)
 
+def take(n, iterable):
+  "Return first n items of the iterable as a list"
+  return list(it.islice(iterable, n))
+
 def accumulate(iterable, func=lambda a,b: a+b):
   'Return running totals'
   # accumulate([1,2,3,4,5]) --> 1 3 6 10 15
