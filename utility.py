@@ -15,7 +15,7 @@ def take(n, iterable):
   "Return first n items of the iterable as a list"
   return list(it.islice(iterable, n))
 
-def nth(iterable, n, default=None):
+def nth(n, iterable, default=None):
   "Returns the nth item or a default value"
   return next(it.islice(iterable, n, None), default)
 
