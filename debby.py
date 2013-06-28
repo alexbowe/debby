@@ -85,22 +85,23 @@ class debruijn_graph:
     e = self._edges[first_pred]
     next_node = select(e, self._edges, first_pred + 1) or self.num_edges - 1
     flags_before_base = rank(e+"-", self._edges, first_pred)
-    number_flags = rank(e+"-", self._edges, next_node) - flags_before_base
-    indices = [first_pred] + [select(e+"-", self._edges, flags_before_base + x) for x in xrange(1, number_flags + 1)]
-    accessor = lambda i: self.label(self._edge_to_node(indices[i]))[0]
-    a = array_adaptor(accessor, len(indices))
+    indegree = rank(e+"-", self._edges, next_node) - flags_before_base + 1
+    get_first_char = lambda i: nth(self.k - 1, self._label_iter(i))
+    selector = lambda i: select(e+"-", self._edges, flags_before_base + i) if i > 0 else first_pred
+    accessor = lambda i: get_first_char(selector(i))
+    a = array_adaptor(accessor, indegree)
     sub_idx = get_index(a, c)
     if sub_idx == -1: return -1
-    return self._edge_to_node(indices[sub_idx])
+    return self._edge_to_node(selector(sub_idx))
 
-  def _label_iter(self, v):
-    i = self._first_edge(v)
+  def _label_iter(self, i):
     while True:
       yield self._F_inv(i)
       i = self._bwd(i)
 
   def label(self, v):
-    return "".join(take(self.k, self._label_iter(v))[::-1])
+    i = self._first_edge(v)
+    return "".join(take(self.k, self._label_iter(i))[::-1])
 
   @staticmethod
   def load(filename):
