@@ -7,13 +7,17 @@ def reverse(s):
 def clean(s):
   return s.strip()
 
-def flatten(listOfLists):
+def flatten(list_of_lists):
   "Flatten one level of nesting"
-  return it.chain.from_iterable(listOfLists)
+  return it.chain.from_iterable(list_of_lists)
 
 def take(n, iterable):
   "Return first n items of the iterable as a list"
   return list(it.islice(iterable, n))
+
+def nth(iterable, n, default=None):
+  "Returns the nth item or a default value"
+  return next(it.islice(iterable, n, None), default)
 
 def accumulate(iterable, func=lambda a,b: a+b):
   'Return running totals'
